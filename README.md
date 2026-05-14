@@ -1,2 +1,2 @@
 # ng-ecommerce
-This is web application build for practice for Angular and .net.
+This is a web application build for practicing Angular and .Net.
