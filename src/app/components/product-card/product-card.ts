@@ -24,8 +24,9 @@ import { EcommerceStore } from '../../ecommerce-store';
 
             <div class="flex items-center justify-between mt-auto">
               <span class="text-2xl font-bold text-gray-900">\${{product().price}}</span>
+              <!--Button to add to cart, calls the store's addToCart method with the product as argument -->
                 <button matButton="filled" class="flex items center gap-2" 
-                  (click)="addToCartClicked.emit(product())">
+                  (click)="store.addToCart(product())">
                   <mat-icon>shopping_cart</mat-icon>
                   Add to Cart
                 </button>
@@ -37,7 +38,8 @@ import { EcommerceStore } from '../../ecommerce-store';
 export class ProductCard {
   product = input.required<Product>(); // Read only input property for product
 
-  addToCartClicked = output<Product>(); // Output event emitter for add to cart action
+  // addToCartClicked = output<Product>(); // Output event emitter for add to cart action
 
+  store = inject(EcommerceStore); // Injecting the EcommerceStore to access state and actions
   
 }

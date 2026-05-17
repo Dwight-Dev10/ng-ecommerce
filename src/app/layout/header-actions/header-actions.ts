@@ -10,10 +10,16 @@ import { EcommerceStore } from '../../ecommerce-store';
   imports: [MatIconModule, MatButtonModule, RouterLink, MatBadge],
   template: `
     <div class="flex items-center gap-2">
-      <button mat-icon-button routerLink="/wishlist" [matBadge]="store.wishListCount()" [matBadgeHidden]="store.wishListCount() === 0">
+      <button mat-icon-button routerLink="/wishlist" 
+      [matBadge]="store.wishListCount()"
+      [matBadgeHidden]="store.wishListCount() === 0">
+
         <mat-icon>favorite</mat-icon>
       </button>
-      <button mat-icon-button>
+      <!-- Cart Button -->
+      <button mat-icon-button [matBadge]="store.cartCount()" 
+      [matBadgeHidden]="store.cartCount() === 0"
+      routerLink="/cart">
         <mat-icon>shopping_cart</mat-icon>
       </button>
       <button matButton>Sign in</button>

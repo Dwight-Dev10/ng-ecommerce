@@ -4,11 +4,13 @@ import { patchState, signalMethod, signalStore,
         withComputed, withMethods, withState } from "@ngrx/signals";
 import { produce } from "immer";
 import { Toaster } from "./services/toaster";
+import { CartItem } from "./models/cart";
 
 export type EcommerceState = {
     products: Product[];
     category: string;
     wishlistItems: Product[];
+    cartItems: CartItem[];
 };
 /* `EcommerceStore` is a signal store in Angular using `@ngrx/signals` library. It defines
 the state of an e-commerce application including products, category, and wishlist
@@ -154,19 +156,23 @@ export const EcommerceStore = signalStore(
   }],
         category: 'all',
         wishlistItems: [],
+        cartItems: [],
     } as EcommerceState),
   
-    withComputed(({category, products, wishlistItems}) => ({
+    withComputed(({category, products, wishlistItems, cartItems}) => ({
         filteredProducts: computed(() => {
             if (category() === 'all') return products();
             return products().filter(p => p.category === category());
         }),
-        wishListCount: computed(() => wishlistItems().length)
+        wishListCount: computed(() => wishlistItems().length),
+        cartCount: computed(() => cartItems().reduce((total, item) => total + item.quantity, 0)),
     })),
+
     withMethods((store, toaster = inject(Toaster)) => ({
         setCategory: signalMethod<string>((category: string) => {
-            patchState(store, { category });
+          patchState(store, { category });
         }),
+        // Add to wishlist
         addToWishlist: (product: Product) => {
           const updatedWishlistItems = produce(store.wishlistItems(), (draft) => {
             if (!draft.find(p => p.id === product.id)) {
@@ -175,15 +181,34 @@ export const EcommerceStore = signalStore(
         });
           patchState(store, { wishlistItems: updatedWishlistItems });
           toaster.success(`${product.name} added to wishlist!`);
-      },
+        },
+      // Remove from wishlist
         removeFromWishlist: (product:Product) => {
           patchState(store, {
             wishlistItems: store.wishlistItems().filter(p => p.id !== product.id)
           });
           toaster.error(`${product.name} removed from wishlist!`);
         },
+        // Clear wishlist
         clearWishlist: () => {
           patchState(store, { wishlistItems: [] });
-        }
+        },
+        addToCart: (product: Product, quantity = 1) => {  
+          const existingCartItem = store.cartItems().findIndex(item => item.product.id === product.id);
+          // Produce will give us an immutable update to the cart items array
+          const updatedCartItems = produce(store.cartItems(), (draft) => {
+            
+            if (existingCartItem !== -1) {
+              draft[existingCartItem].quantity += quantity;
+            } else {
+              draft.push({ product, quantity });
+            }
+          });
+
+          patchState(store, { cartItems: updatedCartItems });
+          toaster.success(existingCartItem ===-1 ? `${product.name} added to cart!` : `${product.name} product already in cart!`);
+        },
+
+
     }))
 );
