@@ -19,7 +19,7 @@ properties for filtered products based on the selected category and the count of
 in the wishlist. */
 export const EcommerceStore = signalStore(
     {
-        providedIn: 'root',
+        providedIn: 'root', //primary way to define a service in Angular that is available globally throughout your application
     },
     withState({
         products: [{
