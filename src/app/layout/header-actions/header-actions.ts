@@ -22,7 +22,7 @@ import { EcommerceStore } from '../../ecommerce-store';
       routerLink="/cart">
         <mat-icon>shopping_cart</mat-icon>
       </button>
-      <button matButton>Sign in</button>
+      <button matButton routerLink="/sign-in">Sign in</button>
       <button matButton="filled">Sign Out</button>
     `,
   styles: ``,
