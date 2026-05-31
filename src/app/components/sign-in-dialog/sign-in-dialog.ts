@@ -1,12 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { MatIcon } from "@angular/material/icon";
-import { MAT_DIALOG_DATA, MatDialogClose, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogClose, MatDialogRef } from '@angular/material/dialog';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatPrefix, MatSuffix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { SignInParams } from '../../models/user';
 import { EcommerceStore } from '../../ecommerce-store';
+import SignUpDialog from '../sign-up-dialog/sign-up-dialog';
+
 
 @Component({
   selector: 'app-sign-in-dialog',
@@ -49,6 +51,10 @@ import { EcommerceStore } from '../../ecommerce-store';
       </mat-form-field>
       <button matButton="filled" type="submit" class="w-full">Sign In</button>
     </form>
+    <p class="text-sm text-gray-500 mt-2 text-center">
+      Don't have an account?
+      <a class="text-blue-600 cursor-pointer" (click)="openSignUpDialog()">Sign Up</a>
+    </p>
   </div> 
   
   `,
@@ -61,6 +67,7 @@ export default class SignInDialog {
 
   data = inject<{checkout: boolean}>(MAT_DIALOG_DATA);
   dialogRef =inject(MatDialogRef);
+  matDialog = inject(MatDialog);
 
   passwordVisible = signal(false);
 
@@ -76,9 +83,18 @@ export default class SignInDialog {
     }
     const {email, password} = this.signInForm.value;
 
-    this.store.signIn({email, password, checkout: this.data.checkout, dialogId: this.dialogRef.id} as SignInParams);
-    
-
+    this.store.signIn({email, password, 
+      checkout: this.data?.checkout, 
+      dialogId: this.dialogRef.id} as SignInParams);
   }
 
+  openSignUpDialog(){
+    this.dialogRef.close();
+    this.matDialog.open(SignUpDialog, {
+      disableClose: true,
+      data: {
+          checkout: this.data?.checkout,
+      }
+    });
+  }
 }
