@@ -9,6 +9,8 @@ import { MatDialog } from "@angular/material/dialog";
 import SignInDialog from "./components/sign-in-dialog/sign-in-dialog";
 import { SignInParams, SignUpParams, User } from "./models/user";
 import { Router } from "@angular/router";
+import { Order } from "./models/orders";
+import { withStorageSync} from "@angular-architects/ngrx-toolkit"
 
 export type EcommerceState = {
     products: Product[];
@@ -16,6 +18,8 @@ export type EcommerceState = {
     wishlistItems: Product[];
     cartItems: CartItem[];
     user: User | undefined;
+    loading: boolean;
+    selectedProductId: string | undefined;
 };
 /* `EcommerceStore` is a signal store in Angular using `@ngrx/signals` library. It defines
 the state of an e-commerce application including products, category, and wishlist
@@ -163,21 +167,31 @@ export const EcommerceStore = signalStore(
         wishlistItems: [],
         cartItems: [],
         user: undefined,
+        loading: false,
+        selectedProductId: undefined,
     } as EcommerceState),
+
+    withStorageSync({ key: 'modern-store', select: ({wishlistItems, cartItems, user}) => ({wishlistItems, cartItems, user })}),
   
-    withComputed(({category, products, wishlistItems, cartItems}) => ({
+    withComputed(({category, products, wishlistItems, cartItems, selectedProductId}) => ({
         filteredProducts: computed(() => {
             if (category() === 'all') return products();
             return products().filter(p => p.category === category());
         }),
         wishListCount: computed(() => wishlistItems().length),
         cartCount: computed(() => cartItems().reduce((total, item) => total + item.quantity, 0)),
+        selectedProduct: computed(() => products().find((p) => p.id === selectedProductId()))
     })),
 
     withMethods((store, toaster = inject(Toaster), matDialog = inject(MatDialog), router = inject(Router)) => ({
         setCategory: signalMethod<string>((category: string) => {
           patchState(store, { category });
         }),
+
+        setProductId: signalMethod<string>((productId: string) => {
+          patchState(store, { selectedProductId: productId });
+        }),
+
         // Add to wishlist
         addToWishlist: (product: Product) => {
           const updatedWishlistItems = produce(store.wishlistItems(), (draft) => {
@@ -262,6 +276,33 @@ export const EcommerceStore = signalStore(
           router.navigate(['/checkout']);
         },
 
+        placeOrder: async () => {
+          patchState(store, { loading: true });
+          
+          const user = store.user();
+          if (!user) {
+            toaster.error('You must be signed in to place an order.');
+            patchState(store, { loading: false });
+            return;
+          }
+
+
+          const order: Order = {
+            id: crypto.randomUUID(),
+            userId: user.id,
+            total: Math.round(store.cartItems()
+                  .reduce((acc, item) => acc + item.quantity * item.product.price, 0)),
+            items: store.cartItems(),
+            paymentStatus: 'success',
+          };
+
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          patchState(store, { cartItems: [], loading: false });
+          router.navigate(['order-success'])
+          toaster.success('Order placed successfully!');
+        },
+
         signIn: ({email, password, checkout, dialogId}: SignInParams) => {
           patchState(store, {user: {
             id: '1',
@@ -274,9 +315,13 @@ export const EcommerceStore = signalStore(
             router.navigate(['/checkout']);
           }
         },
+
+
         signOut: () => {
           patchState(store, {user: undefined});
         },
+
+
         signUp: ({email, password, name, checkout, dialogId}: SignUpParams) => {
           patchState(store, {user: {
             id: '1',
