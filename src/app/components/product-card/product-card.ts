@@ -9,8 +9,12 @@ import { RouterLink } from "@angular/router";
   selector: 'app-product-card',
   imports: [MatAnchor, MatIcon, RouterLink],
   template: ` 
-  <div class="relative bg-white cursor-pointer rounded-xl shadow-lg overflow-hidden flex flex-col h-full">
-          <img [src]="product().imageUrl" class="w-full h-[300px] object-cover rounded-t-xl" [routerLink]="['/product', product().id]"/>
+  <div class="relative bg-white cursor-pointer rounded-xl shadow-lg overflow-hidden flex flex-col h-full transition-all duration-200 ease-out hover:translate-y-1 hover">
+          <img [src]="product().imageUrl" 
+          class="w-full h-[300px] object-cover rounded-t-xl" 
+          [routerLink]="['/product', product().id]"
+          [style.view-transition-name]="'product-image-' + product().id"
+          />
 
           <ng-content/>
 
