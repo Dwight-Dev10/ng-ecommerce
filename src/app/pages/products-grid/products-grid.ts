@@ -58,7 +58,7 @@ import { ToggleWishlistButton } from "../../components/toggle-wishlist-button/to
          
             </app-product-card>
           }
-        </div>
+        </div>        ng add @angular/ssr
       </mat-sidenav-content>
     </mat-sidenav-container>
 

@@ -11,6 +11,7 @@ import { SignInParams, SignUpParams, User } from "./models/user";
 import { Router } from "@angular/router";
 import { Order } from "./models/orders";
 import { withStorageSync} from "@angular-architects/ngrx-toolkit"
+import { AddReviewParams, UserReview } from "./models/user-review";
 
 export type EcommerceState = {
     products: Product[];
@@ -18,13 +19,19 @@ export type EcommerceState = {
     wishlistItems: Product[];
     cartItems: CartItem[];
     user: User | undefined;
+
     loading: boolean;
     selectedProductId: string | undefined;
+
+    writeReview: boolean;
+
 };
+
+
 /* `EcommerceStore` is a signal store in Angular using `@ngrx/signals` library. It defines
 the state of an e-commerce application including products, category, and wishlist
 items. It initializes the state with a list of products and provides computed
-properties for filtered products based on the selected category and the count of items
+properties for filtered products based on the selected  category and the count of items
 in the wishlist. */
 export const EcommerceStore = signalStore(
     {
@@ -40,7 +47,29 @@ export const EcommerceStore = signalStore(
     rating: 4.5,
     reviewCount: 342,
     inStock: true,
-    category: 'Electronics'
+    category: 'Electronics',
+    reviews: [
+      {
+        id: 'r1-1',
+        productId: 'p1',
+        UserName: 'Ava M.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/45.jpg',
+        rating: 5,
+        title: 'Fantastic sound quality',
+        comment: 'These headphones are comfortable and the noise cancellation is amazing.',
+        reviewDate: new Date('2026-05-14')
+      },
+      {
+        id: 'r1-2',
+        productId: 'p1',
+        UserName: 'Noah S.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/65.jpg',
+        rating: 4,
+        title: 'Great value for the price',
+        comment: 'Battery life lasts all day and the audio is crisp.',
+        reviewDate: new Date('2026-04-09')
+      }
+    ]
   },
   {
     id: 'p2',
@@ -51,7 +80,19 @@ export const EcommerceStore = signalStore(
     rating: 4.2,
     reviewCount: 198,
     inStock: true,
-    category: 'Electronics'
+    category: 'Electronics',
+    reviews: [
+      {
+        id: 'r2-1',
+        productId: 'p2',
+        UserName: 'Mia W.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/18.jpg',
+        rating: 4,
+        title: 'Helpful workout tracking',
+        comment: 'The sleep monitoring feature is surprisingly accurate.',
+        reviewDate: new Date('2026-03-22')
+      }
+    ]
   },
   {
     id: 'p3',
@@ -62,7 +103,19 @@ export const EcommerceStore = signalStore(
     rating: 4.3,
     reviewCount: 121,
     inStock: true,
-    category: 'Clothing'
+    category: 'Clothing',
+    reviews: [
+      {
+        id: 'r3-1',
+        productId: 'p3',
+        UserName: 'Liam K.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/12.jpg',
+        rating: 5,
+        title: 'Very comfortable',
+        comment: 'These sneakers fit well and feel great for walking around town.',
+        reviewDate: new Date('2026-02-08')
+      }
+    ]
   },
   {
     id: 'p4',
@@ -73,7 +126,19 @@ export const EcommerceStore = signalStore(
     rating: 4.6,
     reviewCount: 89,
     inStock: false,
-    category: 'Clothing'
+    category: 'Clothing',
+    reviews: [
+      {
+        id: 'r4-1',
+        productId: 'p4',
+        UserName: 'Sophia P.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/29.jpg',
+        rating: 4,
+        title: 'Stylish and warm',
+        comment: 'This jacket is cute and fits nicely over sweaters.',
+        reviewDate: new Date('2026-04-30')
+      }
+    ]
   },
   {
     id: 'p5',
@@ -84,7 +149,19 @@ export const EcommerceStore = signalStore(
     rating: 4.7,
     reviewCount: 512,
     inStock: true,
-    category: 'Home & Kitchen'
+    category: 'Home & Kitchen',
+    reviews: [
+      {
+        id: 'r5-1',
+        productId: 'p5',
+        UserName: 'Ethan G.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/23.jpg',
+        rating: 5,
+        title: 'Keeps drinks cold',
+        comment: 'I used it all day and my drink stayed cold for hours.',
+        reviewDate: new Date('2026-05-02')
+      }
+    ]
   },
   {
     id: 'p6',
@@ -95,7 +172,19 @@ export const EcommerceStore = signalStore(
     rating: 4.4,
     reviewCount: 276,
     inStock: true,
-    category: 'Electronics'
+    category: 'Electronics',
+    reviews: [
+      {
+        id: 'r6-1',
+        productId: 'p6',
+        UserName: 'Oliver B.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/34.jpg',
+        rating: 4,
+        title: 'Smooth and responsive',
+        comment: 'The buttons are responsive and the RGB looks great on my desk.',
+        reviewDate: new Date('2026-01-18')
+      }
+    ]
   },
   {
     id: 'p7',
@@ -106,7 +195,19 @@ export const EcommerceStore = signalStore(
     rating: 4.6,
     reviewCount: 143,
     inStock: true,
-    category: 'Electronics'
+    category: 'Electronics',
+    reviews: [
+      {
+        id: 'r7-1',
+        productId: 'p7',
+        UserName: 'Isabella R.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/40.jpg',
+        rating: 5,
+        title: 'Beautiful display',
+        comment: 'Colors are vivid and the screen is very crisp.',
+        reviewDate: new Date('2026-03-11')
+      }
+    ]
   },
   {
     id: 'p8',
@@ -117,7 +218,19 @@ export const EcommerceStore = signalStore(
     rating: 4.1,
     reviewCount: 87,
     inStock: true,
-    category: 'Home & Kitchen'
+    category: 'Home & Kitchen',
+    reviews: [
+      {
+        id: 'r8-1',
+        productId: 'p8',
+        UserName: 'Emma T.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/51.jpg',
+        rating: 4,
+        title: 'Easy to use',
+        comment: 'My morning coffee is ready in minutes and it tastes great.',
+        reviewDate: new Date('2026-04-07')
+      }
+    ]
   },
   {
     id: 'p9',
@@ -128,7 +241,19 @@ export const EcommerceStore = signalStore(
     rating: 4.5,
     reviewCount: 231,
     inStock: true,
-    category: 'Fitness'
+    category: 'Fitness',
+    reviews: [
+      {
+        id: 'r9-1',
+        productId: 'p9',
+        UserName: 'Harper L.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/14.jpg',
+        rating: 5,
+        title: 'Great grip',
+        comment: 'This mat never slips during my practice and is very comfortable.',
+        reviewDate: new Date('2026-01-30')
+      }
+    ]
   },
   {
     id: 'p10',
@@ -139,7 +264,19 @@ export const EcommerceStore = signalStore(
     rating: 4.4,
     reviewCount: 310,
     inStock: false,
-    category: 'Accessories'
+    category: 'Accessories',
+    reviews: [
+      {
+        id: 'r10-1',
+        productId: 'p10',
+        UserName: 'Lucas H.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/50.jpg',
+        rating: 4,
+        title: 'Roomy and sturdy',
+        comment: 'Holds my laptop and travel items well, with good padding.',
+        reviewDate: new Date('2026-02-21')
+      }
+    ]
   },
   {
     id: 'p11',
@@ -150,7 +287,19 @@ export const EcommerceStore = signalStore(
     rating: 4.0,
     reviewCount: 156,
     inStock: true,
-    category: 'Electronics'
+    category: 'Electronics',
+    reviews: [
+      {
+        id: 'r11-1',
+        productId: 'p11',
+        UserName: 'Avery N.',
+        userImageUrl: 'https://randomuser.me/api/portraits/men/39.jpg',
+        rating: 4,
+        title: 'Convenient charging',
+        comment: 'Works well with my phone and charges quickly.',
+        reviewDate: new Date('2026-03-05')
+      }
+    ]
   },
   {
     id: 'p12',
@@ -161,7 +310,19 @@ export const EcommerceStore = signalStore(
     rating: 4.3,
     reviewCount: 98,
     inStock: true,
-    category: 'Home & Office'
+    category: 'Home & Office',
+    reviews: [
+      {
+        id: 'r12-1',
+        productId: 'p12',
+        UserName: 'Chloe F.',
+        userImageUrl: 'https://randomuser.me/api/portraits/women/27.jpg',
+        rating: 5,
+        title: 'Perfect desk light',
+        comment: 'The brightness settings are great and the USB port is handy.',
+        reviewDate: new Date('2026-04-16')
+      }
+    ]
   }],
         category: 'all',
         wishlistItems: [],
@@ -169,9 +330,13 @@ export const EcommerceStore = signalStore(
         user: undefined,
         loading: false,
         selectedProductId: undefined,
+        writeReview: false
     } as EcommerceState),
 
-    withStorageSync({ key: 'modern-store', select: ({wishlistItems, cartItems, user}) => ({wishlistItems, cartItems, user })}),
+    withStorageSync({ 
+      key: 'modern-store',
+      select: ({wishlistItems, cartItems, user}) => ({wishlistItems, cartItems, user }),
+      }),
   
     withComputed(({category, products, wishlistItems, cartItems, selectedProductId}) => ({
         filteredProducts: computed(() => {
@@ -335,5 +500,48 @@ export const EcommerceStore = signalStore(
           }
         },
 
+        showWriteReview: () => {
+          patchState(store, { writeReview: true });
+        },
+        
+        hideWriteReview: () => {
+          patchState(store, { writeReview: false });
+        },
+
+        addReview: async ({title, comment, rating}: AddReviewParams) => {
+          patchState(store, { 
+          loading: true });
+          const productId = store.products().find(p => p.id === store.selectedProductId());
+
+          if (!productId) {
+            toaster.error('Product not found.');
+            patchState(store, { loading: false });
+            return;
+          }
+
+          const newReview: UserReview = {
+            id: crypto.randomUUID(),
+            productId: productId.id,
+            UserName: store.user()?.name || 'Anonymous',
+            userImageUrl: store.user()?.imageUrl || '',
+            rating,
+            title,
+            comment,
+            reviewDate: new Date(),
+          };
+
+          const updatedProducts = produce(store.products(), (draft) => {
+            const productIndex = draft.findIndex(p => p.id === productId.id);
+            draft[productIndex].reviews.push(newReview);
+            draft[productIndex].rating = Math.round((draft[productIndex].reviews.reduce((acc, r) => acc + r.rating, 0) 
+                                                    / draft[productIndex].reviews.length) * 10) / 10;
+            draft[productIndex].reviewCount = draft[productIndex].reviews.length;
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        patchState(store, {loading: false, products: updatedProducts, writeReview: false});
+      },
+      
+        
     }))
 );
