@@ -12,7 +12,8 @@ import SignUpDialog from '../../components/sign-up-dialog/sign-up-dialog';
 
 @Component({
   selector: 'app-header-actions',
-  imports: [MatIconModule, MatButtonModule, RouterLink, MatBadge, MatMenu, MatMenuItem, MatMenuTrigger, MatDivider],
+  imports: [MatIconModule, MatButtonModule, RouterLink, MatBadge, 
+          MatMenu, MatMenuItem, MatMenuTrigger, MatDivider],
   template: `
     <div class="flex items-center gap-2">
       <button mat-icon-button routerLink="/wishlist" 

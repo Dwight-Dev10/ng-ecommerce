@@ -12,6 +12,7 @@ import { Router } from "@angular/router";
 import { Order } from "./models/orders";
 import { withStorageSync} from "@angular-architects/ngrx-toolkit"
 import { AddReviewParams, UserReview } from "./models/user-review";
+import { ProductService } from "./services/ProductService";
 
 export type EcommerceState = {
     products: Product[];
@@ -348,7 +349,39 @@ export const EcommerceStore = signalStore(
         selectedProduct: computed(() => products().find((p) => p.id === selectedProductId()))
     })),
 
-    withMethods((store, toaster = inject(Toaster), matDialog = inject(MatDialog), router = inject(Router)) => ({
+    withMethods((store, 
+      toaster = inject(Toaster),
+      matDialog = inject(MatDialog), 
+      router = inject(Router),
+      productService = inject(ProductService)) => ({
+
+      
+      loadProducts: () => {
+        productService.getProducts().subscribe({
+          next: (products) => {
+            patchState(store, { products });
+          },
+          error: (err) => {
+            console.error('Unable to load products', err);
+            toaster.error('Failed to load products.');
+          }
+        });
+      },
+
+      SearchProducts(searchTerm: string){
+        productService.getSearchForProduct(searchTerm).subscribe({
+          next: (products) => {
+            patchState(store, {products})
+          },
+          error: err => {
+            console.error('Unable to load products. Fun: SearchProducts', err);
+            toaster.error('Failed to load search product.');
+
+          }
+        });
+      }
+
+
         setCategory: signalMethod<string>((category: string) => {
           patchState(store, { category });
         }),
@@ -538,8 +571,8 @@ export const EcommerceStore = signalStore(
             draft[productIndex].reviewCount = draft[productIndex].reviews.length;
         });
 
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        patchState(store, {loading: false, products: updatedProducts, writeReview: false});
+        // await new Promise((resolve) => setTimeout(resolve, 1000));
+        // patchState(store, {loading: false, products: updatedProducts, writeReview: false});
       },
       
         

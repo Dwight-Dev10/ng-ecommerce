@@ -51,5 +51,9 @@ export class ProductCard {
   // addToCartClicked = output<Product>(); // Output event emitter for add to cart action
 
   store = inject(EcommerceStore); // Injecting the EcommerceStore to access state and actions
+
+  ngOnInit(){
+    this.store.loadProducts();
+  }
   
 }

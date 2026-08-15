@@ -1,8 +1,8 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Product } from '../../models/product';
 import { ProductCard } from '../../components/product-card/product-card';
-import { MatSidenav,MatSidenavContainer, MatSidenavContent } from "@angular/material/sidenav";
-import {MatListItemTitle, MatNavList, MatListItem} from '@angular/material/list'
+import { MatSidenav, MatSidenavContainer, MatSidenavContent } from "@angular/material/sidenav";
+import { MatListItemTitle, MatNavList, MatListItem } from '@angular/material/list'
 import { RouterLink } from '@angular/router';
 import { TitleCasePipe } from '@angular/common';
 import { EcommerceStore } from '../../ecommerce-store';
@@ -13,12 +13,10 @@ import { ToggleWishlistButton } from "../../components/toggle-wishlist-button/to
 @Component({
   selector: 'app-products-grid',
   imports: [
-    ProductCard, MatSidenav,
-    MatSidenavContainer, MatSidenavContent, MatNavList,
-    MatListItem, MatListItemTitle,
-    RouterLink, TitleCasePipe,
+    ProductCard, MatSidenav,MatSidenavContainer, MatSidenavContent, 
+    MatNavList, MatListItem, MatListItemTitle, RouterLink, TitleCasePipe,
     ToggleWishlistButton
-],
+  ],
   template: ` 
 
     <mat-sidenav-container>
@@ -58,7 +56,7 @@ import { ToggleWishlistButton } from "../../components/toggle-wishlist-button/to
          
             </app-product-card>
           }
-        </div>        ng add @angular/ssr
+        </div>     
       </mat-sidenav-content>
     </mat-sidenav-container>
 
@@ -73,17 +71,18 @@ export default class ProductsGrid {
   category = input<string>('all'); // Read only input property for category
 
 
-addToCart(product: Product) {
-  console.log('Adding to cart:', product);
-}
+  addToCart(product: Product) {
+    console.log('Adding to cart:', product);
+  }
 
-store = inject(EcommerceStore);
+  store = inject(EcommerceStore);
 
-categories = signal<string[]>(['all', 'Electronics', 'Clothing', 'Home & Kitchen', 'Fitness', 'Accessories', 'Home & Office']);
+  categories = signal<string[]>(['all', 'Electronics', 'Clothing', 'Home & Kitchen', 'Fitness', 'Accessories', 'Home & Office']);
 
-constructor() {
-  this.store.setCategory(this.category);
-}
+  constructor() {
+    this.store.setCategory(this.category);
+    this.store.loadProducts(); // Load products when the component is initialized
+  }
 
 
 }
