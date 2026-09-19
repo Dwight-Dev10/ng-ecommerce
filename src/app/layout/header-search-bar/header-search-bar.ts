@@ -9,18 +9,20 @@ import { MatIcon } from "@angular/material/icon";
   imports: [MatInput, MatIconButton, MatIcon],
   template: ` 
   <div class="search-bar-container">
-    <button mat-icon-button>
-      <mat-icon>search</mat-icon>
+    <button mat-icon-button (click)="onSearchInput(searchInput.value)">
+      <mat-icon >search</mat-icon>
     </button>
-    <input matInput type="text" placeholder="Search..."/>
+    <input #searchInput matInput type="text" placeholder="Search..." (keyup.ENTER)="onSearchInput(searchInput.value)"/>
   </div>
-   `,
+  `,
   styles: ``,
 })
 export class HeaderSearchBar {
   store = inject(EcommerceStore);
 
   
-
+  onSearchInput(term: string) {
+    this.store.searchProducts(term);
+  }
   
 }

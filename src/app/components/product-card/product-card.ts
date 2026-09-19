@@ -11,7 +11,7 @@ import { StarRating } from "../star-rating/star-rating";
   imports: [MatAnchor, MatIcon, RouterLink, StarRating],
   template: ` 
   <div class="relative bg-white cursor-pointer rounded-xl shadow-lg overflow-hidden flex flex-col h-full transition-all duration-200 ease-out hover:translate-y-1 hover">
-          <img [src]="product().imageUrl" 
+          <img [src]="product().imageUrl" [alt]="product().name" 
           class="w-full h-[300px] object-cover rounded-t-xl" 
           [routerLink]="['/product', product().id]"
           [style.view-transition-name]="'product-image-' + product().id"

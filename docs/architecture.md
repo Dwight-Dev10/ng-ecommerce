@@ -1,115 +1,115 @@
 # NgEcommerce Architecture
 
 ## Overview
-NgEcommerce is a modern Angular 21 storefront built with standalone components, Angular Signals, and server-side rendering support. The app is designed as a lightweight single-page application with client-side navigation, state management using `@ngrx/signals`, and a mock data-driven product catalog.
+NgEcommerce is a modern Angular 21 storefront built with standalone components, Angular Signals, Material UI, and server-side rendering. The app follows a modular storefront architecture where route-driven pages, stateful services, and component-level actions are separated cleanly.
+
+## Tech Stack
+- Angular 21
+- Standalone components
+- Angular Signals and `@ngrx/signals`
+- Angular Material
+- RxJS and `HttpClient`
+- SSR support via `@angular/ssr`
+- Tailwind-style utility classes for layout and spacing
 
 ## Application Structure
 - `src/app/app.ts`
-  - Root application component.
-  - Renders the global header and `router-outlet`.
+  - Root application shell.
+  - Hosts the global layout and router outlet.
 - `src/app/app.routes.ts`
-  - Defines the route configuration using lazy-loaded standalone pages.
-  - Primary routes:
-    - `/products/:category`
-    - `/wishlist`
-    - `/cart`
-    - `/checkout`
-    - `/product/:productId`
-    - `/order-success`
+  - Declares the route structure for catalog, detail, cart, checkout, wishlist, and success screens.
 - `src/app/app.config.ts`
-  - Provides Angular application-wide providers.
-  - Configures router, HTTP client, hot toast notifications, Angular Material defaults, and hydration support.
+  - Registers app-level providers such as router configuration, Material setup, and toast utilities.
 - `src/app/app.config.server.ts`
-  - Extends the client config with server rendering providers.
+  - Adds server-side rendering configuration for the Angular app.
+
+## Routing Model
+The application uses route-driven page composition:
+
+- `/products/:category` — product catalog filtered by category
+- `/product/:productId` — product detail page
+- `/wishlist` — saved products
+- `/cart` — shopping cart
+- `/checkout` — order placement flow
+- `/order-success` — confirmation page
+
+The default route redirects to `/products/all`.
 
 ## State Management
-- `src/app/ecommerce-store.ts`
-  - Central application store implemented with `signalStore` from `@ngrx/signals`.
-  - Holds main state slices:
-    - `products`
-    - `category`
-    - `wishlistItems`
-    - `cartItems`
-    - `user`
-    - `selectedProductId`
-    - `loading`
-    - `writeReview`
-  - Includes computed values:
-    - `filteredProducts`
-    - `wishListCount`
-    - `cartCount`
-    - `selectedProduct`
-  - Exposes methods for business actions:
-    - `setCategory`
-    - `setProductId`
-    - `addToWishlist`
-    - `removeFromWishlist`
-    - `clearWishlist`
-    - `addToCart`
-    - `setItemQuantity`
-    - `addAllWishlistToCart`
-    - `moveToWishlist`
-    - `removeFromCart`
-    - `proceedToCheckout`
-    - `placeOrder`
-    - `signIn`
-    - `signUp`
-    - `signOut`
-    - `showWriteReview`
-    - `hideWriteReview`
-    - `addReview`
-  - Uses `immer` to update arrays immutably.
+The central application state is maintained in `src/app/ecommerce-store.ts` using `signalStore` from `@ngrx/signals`.
 
-## Models
-- `src/app/models/product.ts`
-  - Product shape includes `id`, `name`, `description`, `price`, `imageUrl`, `rating`, `reviewCount`, `inStock`, `category`, and associated reviews.
-- `src/app/models/cart.ts`
-  - `CartItem` includes `product` and `quantity`.
-- `src/app/models/user.ts`
-  - `User` shape includes `id`, `name`, `email`, and `imageUrl`.
-  - Sign-in/sign-up payload types are defined here.
-- `src/app/models/orders.ts`
-  - `Order` structure includes `id`, `userId`, `total`, `items`, and `paymentStatus`.
-- `src/app/models/user-review.ts`
-  - Defines individual product review metadata.
+### State slices
+- `products`
+- `category`
+- `wishlistItems`
+- `cartItems`
+- `user`
+- `selectedProductId`
+- `loading`
+- `writeReview`
 
-## Component Architecture
-- Standalone components are used throughout the app rather than NgModules.
-- Key layout and UI components:
-  - `src/app/layout/header/header.ts` — global header with navigation and action controls.
-  - `src/app/components/product-card/product-card.ts` — product preview card.
-  - `src/app/components/toggle-wishlist-button/toggle-wishlist-button.ts` — wishlist toggle button.
-  - `src/app/components/summarize-order/summarize-order.ts` — order summary panel used in cart and checkout.
-  - `src/app/components/qty-selector/qty-selector.ts` — quantity adjustment control.
-  - `src/app/components/sign-in-dialog/sign-in-dialog.ts` and `sign-up-dialog.ts` — modal dialog components for authentication.
+### Derived values
+- `filteredProducts`
+- `wishListCount`
+- `cartCount`
+- `selectedProduct`
 
-## Page Flow
-- Product browsing is driven by `ProductsGrid` and route parameter category filtering.
-- Product detail is shown in `ViewProductDetail` and includes product info, stock status, and reviews.
-- Wishlist, cart, checkout, and order success pages each have dedicated standalone pages.
+### Store responsibilities
+The signal store manages product loading, category filtering, cart updates, wishlist interactions, checkout, sign-in/sign-up state, and review submission logic. It uses immutable array updates via `immer` to keep updates predictable and easy to reason about.
 
-## Routing and Navigation
-- Routes are defined with lazy-loaded standalone page components.
-- Category selection uses route segments such as `/products/electronics`.
-- The default route redirects to `/products/all`.
-- The cart page can route the user to checkout, and order completion navigates to `/order-success`.
+## Service Architecture
+The application separates transport concerns from UI logic through Angular services.
 
-## API and Data
-- The app is currently built on in-memory product data inside `EcommerceStore`.
-- There is a placeholder `ProductService` that currently points to `https://localhost:5001/api/products`, but this backend API is not implemented in this repository.
-- All product, cart, wishlist, and auth flows are currently handled locally in the signal store.
+### ProductService
+`src/app/services/ProductService.ts` is the main API client. It injects `HttpClient` and exposes product CRUD and search operations against the backend environment URL.
+
+The base API URL is configured in `src/environments/environment.development.ts`:
+
+```ts
+apiUrl: 'http://localhost:5296/api'
+```
+
+This service is responsible for:
+- fetching the product catalog
+- retrieving a product by name or ID
+- fetching by category
+- searching by keyword
+- creating, updating, and deleting products
+
+## Component Design
+The application is built using standalone components instead of NgModules. This keeps modules smaller and makes route-based component loading straightforward.
+
+### Key components
+- `src/app/layout/header/header.ts` — top navigation and app-level actions
+- `src/app/components/product-card/product-card.ts` — product summary card
+- `src/app/components/toggle-wishlist-button/toggle-wishlist-button.ts` — add/remove wishlist control
+- `src/app/components/summarize-order/summarize-order.ts` — order total panel
+- `src/app/components/qty-selector/qty-selector.ts` — quantity control
+- `src/app/components/sign-in-dialog/sign-in-dialog.ts` — user sign-in UI
+- `src/app/components/sign-up-dialog/sign-up-dialog.ts` — registration UI
+
+## Models and Domain Objects
+The app uses typed model files to define domain objects and payloads:
+
+- `src/app/models/product.ts` — product entity and review data
+- `src/app/models/cart.ts` — cart item model
+- `src/app/models/user.ts` — auth and user profile types
+- `src/app/models/orders.ts` — order object and checkout payload
+- `src/app/models/user-review.ts` — review entity type
+
+## .NET API Integration
+The frontend is designed to work with a .NET API backend at `http://localhost:5296/api`. Product data and possibly future auth/order flows are intended to be driven by the API rather than static local arrays.
+
+This keeps the storefront architecture extensible:
+- UI remains Angular-specific
+- domain contracts are shared through typed TypeScript models
+- API integration is centralized in a service layer
+- the store retains client-side state for cart and UX behaviors
 
 ## UI and Styling
-- Uses Angular Material components and custom Tailwind-inspired utility classes.
-- Uses view transitions for product image navigation and wishlist button animations.
-- Includes SSR support with `@angular/ssr` and hydration.
+- Angular Material provides dialogs, side navigation, lists, and progress indicators.
+- Utility-based styling enables a lightweight responsive storefront experience.
+- Product cards, category panels, order summaries, and checkout sections are all componentized and reusable.
 
-## SSR Support
-- `angular.json` build options include `server` and `ssr.entry` for server rendering.
-- `src/app/app.config.server.ts` enables server rendering with route support.
-- `app.config.ts` includes browser hydration and event replay.
-
-## Notes
-- The application is structured for easy extension to a real backend.
-- The `EcommerceStore` can be updated to load products from `ProductService` once an API is available.
-- `withStorageSync` is currently commented out and could be enabled for local persistence of cart and wishlist state.
+## SSR and Performance
+The project includes SSR support with Angular’s server platform and hydration configuration. This gives the application a better foundation for SEO, performance, and future server-rendered improvements while still preserving a client-side storefront experience.

@@ -1,75 +1,83 @@
 # NgEcommerce Features
 
 ## Product Catalog
-- Displays a catalog of products grouped by category.
-- Category navigation is available in a left-side drawer on the products grid page.
+- The storefront provides a category-based product grid that loads via route parameters such as `/products/electronics`.
 - Categories include `all`, `Electronics`, `Clothing`, `Home & Kitchen`, `Fitness`, `Accessories`, and `Home & Office`.
-- The product card shows:
+- Each product card displays:
   - product image
   - product name
   - price
   - rating and review count
-  - stock availability
-- Users can click a product card to view detailed product information.
+  - stock status
+  - quick add-to-cart action
+  - wishlist toggle
+- Product listing is driven by the `EcommerceStore` and the backend product service.
+
+## Search and Filtering
+- Users can search products by name or keyword through the `ProductService` search flow.
+- Category navigation is handled through the sidebar and route-based filtering.
+- Search and category results are surfaced in the same catalog page for a consistent shopping experience.
 
 ## Product Details
-- Product detail page shows:
-  - image and gallery-style display
-  - full product title and description
-  - price and stock status
-  - category badge
-  - review summary and latest customer reviews
-  - quantity selector and add-to-cart action
-  - wishlist toggle button
-- Product reviews are sorted by date with the newest reviews first.
-- Signed-in users can open a review form to write a review.
+- Product detail pages render a complete product overview with:
+  - main product image
+  - detailed description
+  - pricing and availability
+  - category indication
+  - customer ratings and review count
+  - review list
+  - add-to-cart quantity selector
+  - wishlist action
+- The detail view also supports a review-writing workflow for authenticated users.
 
-## Shopping Cart
-- The cart page includes:
-  - a list of cart items
-  - item quantity controls
-  - item removal controls
-  - wishlist tease section
-  - order summary with subtotal, tax, and total
-  - `Proceed to Checkout` action
-- `Summarize Order` is a reusable panel that calculates subtotal, tax (7%), and total.
-- Cart item count and total quantity are computed in the store.
+## Shopping Cart Management
+- The cart supports:
+  - adding products from catalog or detail views
+  - updating item quantities
+  - removing items
+  - moving items into or out of the wishlist
+  - viewing an order summary with subtotal, tax, and total
+- The cart state is stored in the Angular signal store and updated with immutable changes.
 
 ## Wishlist
-- Users can add products to a wishlist from both the product grid and product detail pages.
-- The wishlist page includes:
-  - product cards for each saved item
-  - remove item controls
-  - clear wishlist action
-- Wishlist items can be moved into the cart from the wishlist page.
+- Users can save products for later using the wishlist toggle button.
+- The wishlist page shows all saved items and provides actions to:
+  - remove an item
+  - clear the entire wishlist
+  - move items into the cart
+- This feature is designed to improve browsing and product comparison without forcing immediate purchase.
 
-## Checkout Process
-- Checkout page provides a simple checkout interface with:
-  - shipping information form
-  - payment options form
-  - order summary panel
-  - `Place Order` button
-- Order placement is simulated in the store with a 1 second delay.
-- After a successful order, the cart is cleared and the user is navigated to the order success page.
+## Checkout Experience
+- The checkout flow includes shipping information, payment form fields, and the order summary panel.
+- The app requires a signed-in user before placing an order.
+- If a customer is not logged in, the sign-in dialog appears automatically.
+- After order placement, the cart is cleared and the user is redirected to the order success page.
 
 ## Authentication
-- The app includes sign-in and sign-up modal dialogs.
-- `EcommerceStore` supports local sign-in/up state with a mocked `User` object.
-- Checkout navigation requires a signed-in user. If unsigned, a sign-in dialog opens before proceeding.
-- Sign-out clears the current user session.
+- The app includes sign-in and sign-up dialogs.
+- Auth state is stored in the central store and used to gate checkout and review actions.
+- Signed-in users can create product reviews and complete purchases.
+- Sign-out clears the current user session and resets access to protected actions.
 
-## Reviews
-- Users can open a review form for the current product.
-- The store supports adding reviews and toggling review form visibility.
-- Review data exists as part of each product model.
+## Review System
+- Product reviews are part of the product model and displayed on the detail page.
+- Users can write a review with a title, comment, and star rating.
+- Review data updates the product’s local average rating and review count in the store.
 
-## UI/UX
-- Uses Angular Material for controls and dialogs.
-- Provides toast notifications for cart, wishlist, auth, and order actions.
-- Uses standalone components and Angular router with view transition support.
-- The layout is optimized for responsive browsing with a sidebar category menu and product cards.
+## New Product and API Integration Features
+- The frontend is now aligned with an ASP.NET Core API backend at `http://localhost:5296/api`.
+- Product fetching and product search are implemented through dedicated HTTP service methods.
+- The architecture supports future expansion for:
+  - order submission over API
+  - real authentication
+  - product management admin features
+  - persistent inventory and review data
 
-## Progress and Limits
-- Product data is currently seeded in the app store, making the app fully functional without a backend.
-- The API layer is not implemented yet; the app currently does not fetch product data from a real backend.
-- The checkout and payment form UI is present, but payment processing is mocked.
+## UI and UX Improvements
+- The storefront uses Angular Material for a polished interface.
+- Toast notifications confirm actions such as cart updates, wishlist changes, sign-in, and order success.
+- Headless, route-driven pages keep the experience responsive and easy to extend.
+- Server-side rendering support improves the project’s production readiness and scalability.
+
+## Current State
+The application is now positioned as a modern e-commerce frontend with a .NET-ready API integration layer and a complete storefront flow from browsing to checkout. The UI is fully functional, and the Angular service layer is ready to integrate with a live ASP.NET backend.

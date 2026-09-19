@@ -1,6 +1,7 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 import { CategoryApi } from './services/category-api';
 import { inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 
 export const serverRoutes: ServerRoute[] = [
 
@@ -9,8 +10,8 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     getPrerenderParams: async () => {
       const catService = inject(CategoryApi);
-      const names = await catService.getCategories();
-      return names.map((name) => ({ category: String(name).trim() }));
+      const names = await firstValueFrom(catService.getCategories())
+      return names.map((name) => ({ category: name.trim() }));
     }
   },
   {

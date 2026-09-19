@@ -1,12 +1,14 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
+import { ProductService } from "./ProductService";
 
 @Injectable({
     providedIn: 'root',
 })
 export class CategoryApi{
-    private categories = ['all', 'electronics', 'Home ', 'Fitness', 'Accessories', 'Clothing', ];
-
+    private categories = ['All', 'Electronics', 'Home & Kitchen', 'Fitness', 'Accessories', 'Clothing', ];
+    productService = inject(ProductService);
     getCategories(){
-        return this.categories;
+        // return this.categories;
+        return this.productService.getCategories();
     }
 }

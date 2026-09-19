@@ -24,12 +24,12 @@ export class ProductService {
     return this.http.get<Product>(`${this.apiUrl}?name=${name}`);
   }
 
-  getProductsByCategory(cat: string): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/category/${cat}`);
+  getCategories(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/categories`);
   }
 
   getSearchForProduct(searchTerm: string): Observable<Product[]>{
-    return this.http.get<Product[]>(`${this.apiUrl}search=${searchTerm}`);
+    return this.http.get<Product[]>(`${this.apiUrl}/search=${searchTerm}`);
   }
 
   createProduct(product: Product): Observable<Product>{
