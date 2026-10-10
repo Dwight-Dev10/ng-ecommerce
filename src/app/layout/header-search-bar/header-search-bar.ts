@@ -3,17 +3,24 @@ import { EcommerceStore } from '../../ecommerce-store';
 import { MatInput } from "@angular/material/input";
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from "@angular/material/icon";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-header-search-bar',
-  imports: [MatInput, MatIconButton, MatIcon],
+  imports: [MatInput, MatIconButton, MatIcon, FormsModule],
   template: ` 
-  <div class="search-bar-container">
-    <button mat-icon-button (click)="onSearchInput(searchInput.value)">
-      <mat-icon >search</mat-icon>
+<form class="search-bar-container" (ngSubmit)="onSearchInput(searchInput.value)">
+    <input
+      #searchInput
+      matInput
+      type="text"
+      placeholder="Search..."
+    />
+
+    <button mat-icon-button type="submit">
+      <mat-icon>search</mat-icon>
     </button>
-    <input #searchInput matInput type="text" placeholder="Search..." (keyup.ENTER)="onSearchInput(searchInput.value)"/>
-  </div>
+  </form>
   `,
   styles: ``,
 })

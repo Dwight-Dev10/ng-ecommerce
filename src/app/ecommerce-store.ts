@@ -31,6 +31,9 @@ export type EcommerceState = {
   loading: boolean;
   selectedProductId: string | undefined;
 
+  searchedResults: Product[],
+  searchTerm: string;
+
   writeReview: boolean;
 };
 
@@ -51,6 +54,9 @@ export const EcommerceStore = signalStore(
     wishlistItems: [],
     cartItems: [],
     user: undefined,
+    
+    searchedResults: [],
+    searchTerm: '',
 
     loading: false,
     selectedProductId: undefined,
@@ -62,21 +68,27 @@ export const EcommerceStore = signalStore(
   //   select: ({wishlistItems, cartItems, user}) => ({wishlistItems, cartItems, user }),
   //   }),
 
-  withComputed(({ products, category, wishlistItems, cartItems, selectedProductId }) => ({
+  withComputed(({ products, category, wishlistItems, cartItems, selectedProductId, searchTerm, searchedResults }) => ({
     // categories: computed(() => categories()),
-    filteredProducts: computed(() => {
+
+    displayProducts: computed(() => {
+      const term = searchTerm().trim();
       const selectedCategory = category().trim().toLowerCase();
 
+      const sourceProduct = term ? searchedResults() : products();
+
       if (selectedCategory === 'all') {
-        return products();
+        return sourceProduct;
       }
-      return products().filter(
-        (product) => product.category.trim().toLocaleLowerCase() === selectedCategory,
-      );
+
+      return sourceProduct.filter((product) => product.category.trim().toLowerCase() === selectedCategory);
     }),
+
     wishListCount: computed(() => wishlistItems().length),
     cartCount: computed(() => cartItems().reduce((total, item) => total + item.quantity, 0)),
     selectedProduct: computed(() => products().find((p) => p.id === selectedProductId())),
+
+    
   })),
 
   withMethods(
@@ -100,19 +112,23 @@ export const EcommerceStore = signalStore(
       },
 
       searchProducts(searchTerm: string) {
-        if (!searchTerm.trim()) {
-          this.loadProducts();
+        const term = searchTerm.trim();
+        
+        if (!term) {
+          patchState(store,{ searchTerm: '', searchedResults: [], loading:false} );
           return;
         }
-        patchState(store, { loading: true });
+        patchState(store, { searchTerm: term , loading: true });
 
-        productService.getSearchForProduct(searchTerm).subscribe({
-          next: (products) => {
-            patchState(store, { products }, { loading: false });
+        productService.getSearchForProduct(term).subscribe({
+          next: (results) => {
+            patchState(store, {searchedResults: results,  loading: false });
+          console.log(results)
+
           },
           error: (err) => {
             console.error('Unable to load products. Fun: SearchProducts', err);
-            patchState(store, { loading: false });
+            patchState(store, { searchedResults: [], loading: false });
             toaster.error('Failed to load search product.');
           },
         });

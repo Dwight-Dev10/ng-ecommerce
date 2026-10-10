@@ -54,15 +54,15 @@ import { ToggleWishlistButton } from '../../components/toggle-wishlist-button/to
       <mat-sidenav-content class="bg-grey-100 p-6 h-full">
         <h1 class="text-2xl font-bold text-gray-900">{{ category() | titlecase }}</h1>
         <p class="text-base text-gray-600 mb-6">
-          {{ store.filteredProducts().length }} product(s) found
+          {{ store.displayProducts().length }} product(s) found
         </p>
         @if (store.loading()) {
           <div class="flex justify-center items-center p-16">
             <mat-spinner diameter="50"></mat-spinner>
           </div>
-        } @else if (store.filteredProducts().length > 0) {
+        } @else if (store.displayProducts().length > 0) {
           <div class="responsive-grid">
-            @for (product of store.filteredProducts(); track product.id) {
+            @for (product of store.displayProducts(); track product.id) {
               <app-product-card [product]="product" (addToCartClicked)="store.addToCart(product)">
                 <app-toggle-wishlist-button
                   [product]="product"
