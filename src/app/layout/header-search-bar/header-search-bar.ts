@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-header-search-bar',
   imports: [MatInput, MatIconButton, MatIcon, FormsModule],
   template: ` 
-<form class="search-bar-container" (ngSubmit)="onSearchInput(searchInput.value)">
+<form class="search-bar-container"(ngSubmit)="onSearchInput(searchInput.value)">
     <input
       #searchInput
       matInput
